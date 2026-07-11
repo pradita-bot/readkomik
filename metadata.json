@@ -1,0 +1,7 @@
+{
+  "name": "ReadKomik",
+  "description": "Website baca komik, manga, manhwa, dan manhua bahasa Indonesia dengan sistem pencarian dan antarmuka modern yang cepat.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
