@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Compass, BookOpen, Star, TrendingUp } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Compass, BookOpen, Star, TrendingUp, Users } from "lucide-react";
 
 interface HeroProps {
   onSelectManga: (slug: string) => void;
@@ -14,7 +14,8 @@ const FEATURED_LIST = [
     description: "Monkey D. Luffy menolak membiarkan siapapun menghalangi jalannya untuk menjadi Raja Bajak Laut. Bersama kru bajak laut Topi Jerami, Luffy mengarungi lautan Grand Line demi menemukan harta karun legendaris 'One Piece'.",
     rating: "9.8",
     status: "Ongoing",
-    genres: ["Action", "Adventure", "Fantasy", "Shounen"]
+    genres: ["Action", "Adventure", "Fantasy", "Shounen"],
+    readers: 1450000
   },
   {
     title: "Magic Emperor",
@@ -24,7 +25,8 @@ const FEATURED_LIST = [
     description: "Kaisar iblis Zhuo Yifan dikhianati dan dibunuh oleh muridnya sendiri. Namun jiwanya bereinkarnasi dalam tubuh seorang pelayan rumah tangga rendahan bernama Zhuo Fan di keluarga Luo yang sedang hancur.",
     rating: "9.7",
     status: "Ongoing",
-    genres: ["Action", "Fantasy", "Martial Arts", "Reincarnation"]
+    genres: ["Action", "Fantasy", "Martial Arts", "Reincarnation"],
+    readers: 1120000
   },
   {
     title: "Solo Leveling",
@@ -34,21 +36,38 @@ const FEATURED_LIST = [
     description: "Di dunia di mana hunter harus bertarung melawan monster mematikan, Sung Jin-Woo adalah hunter terlemah dari seluruh dunia. Namun takdir memberinya program rahasia 'System' yang membuatnya bisa naik level tanpa batas.",
     rating: "9.9",
     status: "Completed",
-    genres: ["Action", "Adventure", "Fantasy", "Overpowered"]
+    genres: ["Action", "Adventure", "Fantasy", "Overpowered"],
+    readers: 1890000
   }
 ];
 
 export default function Hero({ onSelectManga }: HeroProps) {
-  const [activeIndex, setActiveIndex] = React.useState(0);
+  const [featuredList, setFeaturedList] = useState<any[]>(FEATURED_LIST);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    async function fetchRecommendations() {
+      try {
+        const res = await fetch("/api/manga/recommendations");
+        const json = await res.json();
+        if (json.success && json.data && json.data.length > 0) {
+          setFeaturedList(json.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch dynamic recommendations:", err);
+      }
+    }
+    fetchRecommendations();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % FEATURED_LIST.length);
+      setActiveIndex((prev) => (prev + 1) % featuredList.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [featuredList]);
 
-  const current = FEATURED_LIST[activeIndex];
+  const current = featuredList[activeIndex] || FEATURED_LIST[0];
 
   return (
     <div className="relative bg-[#050505] border border-white/5 rounded-2xl overflow-hidden shadow-2xl mb-8 group" id="hero-carousel">
@@ -89,7 +108,7 @@ export default function Hero({ onSelectManga }: HeroProps) {
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-3">
             <span className="bg-red-600 text-white font-black px-3 py-1 rounded-full text-[10px] tracking-[0.2em] uppercase flex items-center gap-1 shadow-lg shadow-red-600/35">
               <TrendingUp className="w-3.5 h-3.5" />
-              <span>REKOMENDASI</span>
+              <span>REKOMENDASI TERATAS</span>
             </span>
             <span className="bg-white/5 text-gray-300 font-semibold px-2.5 py-0.5 rounded-full text-[10px] uppercase">
               {current.type}
@@ -97,6 +116,12 @@ export default function Hero({ onSelectManga }: HeroProps) {
             <span className="bg-white/5 text-gray-300 font-semibold px-2.5 py-0.5 rounded-full text-[10px] uppercase">
               ★ {current.rating}
             </span>
+            {current.readers && (
+              <span className="bg-red-500/10 border border-red-500/10 text-red-400 font-bold px-2.5 py-0.5 rounded-full text-[10px] uppercase flex items-center gap-1 shadow-[0_0_8px_rgba(239,68,68,0.1)]">
+                <Users className="w-3 h-3 text-red-400" />
+                <span>{current.readers.toLocaleString("id-ID")} Pembaca</span>
+              </span>
+            )}
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black italic tracking-tighter text-white uppercase mb-3 leading-none">
@@ -108,7 +133,7 @@ export default function Hero({ onSelectManga }: HeroProps) {
           </p>
 
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5 mb-5">
-            {current.genres.map((g) => (
+            {current.genres.map((g: string) => (
               <span key={g} className="bg-white/5 border border-white/5 text-gray-400 px-2.5 py-1 rounded text-[11px] font-medium">
                 {g}
               </span>
@@ -128,7 +153,7 @@ export default function Hero({ onSelectManga }: HeroProps) {
 
       {/* Slider Indicators */}
       <div className="absolute bottom-4 right-6 z-30 flex items-center gap-2">
-        {FEATURED_LIST.map((_, idx) => (
+        {featuredList.map((_, idx) => (
           <button
             key={idx}
             onClick={() => setActiveIndex(idx)}
