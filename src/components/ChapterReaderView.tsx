@@ -299,7 +299,7 @@ export default function ChapterReaderView({
               <div key={index} className="relative w-full text-center flex flex-col items-center mb-1 last:mb-0">
                 {/* Image item with referrerPolicy to safely bypass standard proxy image checks */}
                 <img
-                  src={image.src}
+                  src={image.src || null}
                   alt={image.alt || `Halaman ${index + 1}`}
                   loading={index < 3 ? "eager" : "lazy"}
                   referrerPolicy="no-referrer"

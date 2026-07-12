@@ -136,7 +136,7 @@ export default function Header({
                       className="w-full text-left px-4 py-2.5 hover:bg-[#1a1a1a] flex items-center gap-3 border-b border-white/5 last:border-0 transition-colors"
                     >
                       <img
-                        src={manga.thumb}
+                        src={manga.thumb || null}
                         alt={manga.title}
                         referrerPolicy="no-referrer"
                         className="w-9 h-12 object-cover rounded shadow bg-[#1a1a1a] flex-shrink-0"
@@ -207,7 +207,7 @@ export default function Header({
                           className="flex gap-3 text-left flex-1 min-w-0"
                         >
                           <img
-                            src={item.thumb}
+                            src={item.thumb || null}
                             alt={item.title}
                             referrerPolicy="no-referrer"
                             className="w-10 h-14 object-cover rounded shadow bg-[#1a1a1a] flex-shrink-0"
@@ -291,7 +291,7 @@ export default function Header({
                         className="w-full p-2.5 hover:bg-[#1a1a1a] flex gap-3 text-left transition-colors"
                       >
                         <img
-                          src={item.thumb}
+                          src={item.thumb || null}
                           alt={item.title}
                           referrerPolicy="no-referrer"
                           className="w-10 h-14 object-cover rounded shadow bg-[#1a1a1a] flex-shrink-0"

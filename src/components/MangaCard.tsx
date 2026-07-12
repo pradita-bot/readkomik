@@ -30,7 +30,7 @@ export default function MangaCard({ manga, onSelect }: MangaCardProps) {
       {/* Thumbnail Container */}
       <div className="relative aspect-[3/4] overflow-hidden bg-slate-900">
         <img
-          src={manga.thumb}
+          src={manga.thumb || null}
           alt={manga.title}
           loading="lazy"
           referrerPolicy="no-referrer"

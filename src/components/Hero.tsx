@@ -77,7 +77,7 @@ export default function Hero({ onSelectManga }: HeroProps) {
       {/* Blurred image background */}
       <div className="absolute inset-0 overflow-hidden select-none pointer-events-none">
         <img
-          src={current.banner}
+          src={current.banner || null}
           alt=""
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover scale-110 blur-xl opacity-20 transition-all duration-1000"
@@ -93,7 +93,7 @@ export default function Hero({ onSelectManga }: HeroProps) {
           className="w-36 h-52 sm:w-44 sm:h-64 object-cover rounded-xl shadow-2xl bg-[#121212] border border-white/10 flex-shrink-0 cursor-pointer overflow-hidden transform group-hover:scale-102 transition-all duration-300 relative group/poster"
         >
           <img
-            src={current.banner}
+            src={current.banner || null}
             alt={current.title}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover group-hover/poster:scale-105 transition-transform duration-500"

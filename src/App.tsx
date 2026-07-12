@@ -6,9 +6,32 @@ import MangaGrid from "./components/MangaGrid";
 import MangaDetailView from "./components/MangaDetailView";
 import ChapterReaderView from "./components/ChapterReaderView";
 import { Manga, BookmarkItem, HistoryItem, Chapter } from "./types";
-import { Search, Compass, RefreshCw, Star, ArrowLeft, RefreshCcw } from "lucide-react";
+import { Search, Compass, RefreshCw, Star, ArrowLeft, RefreshCcw, Heart, ShieldCheck } from "lucide-react";
 
 export default function App() {
+  // Welcome Popup State
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    try {
+      const dismissed = localStorage.getItem("readkomik_welcome_dismissed");
+      if (!dismissed) {
+        setShowWelcome(true);
+      }
+    } catch (e) {
+      console.error("Failed to read welcome dismiss status:", e);
+    }
+  }, []);
+
+  const handleDismissWelcome = () => {
+    setShowWelcome(false);
+    try {
+      localStorage.setItem("readkomik_welcome_dismissed", "true");
+    } catch (e) {
+      console.error("Failed to write welcome dismiss status:", e);
+    }
+  };
+
   // Navigation states
   const [currentView, setCurrentView] = useState<"home" | "detail" | "reader">("home");
   const [searchQuery, setSearchQuery] = useState("");
@@ -210,12 +233,14 @@ export default function App() {
     const cachedCh = cachedChapters.find((c) => c.slug === chapterSlug);
     // Refresh history
     const savedBookmarkMatch = bookmarks.find((b) => b.slug === selectedMangaSlug);
-    const mangaTitle = savedBookmarkMatch ? savedBookmarkMatch.title : selectedMangaSlug.replace(/-/g, " ");
+    const foundManga = mangaList.find((m) => m.slug === selectedMangaSlug) || searchList.find((m) => m.slug === selectedMangaSlug);
+    const mangaTitle = savedBookmarkMatch ? savedBookmarkMatch.title : (foundManga ? foundManga.title : selectedMangaSlug.replace(/-/g, " "));
+    const mangaThumb = savedBookmarkMatch ? savedBookmarkMatch.thumb : (foundManga ? foundManga.thumb : "");
     
     handleAddHistory({
       slug: selectedMangaSlug,
       title: mangaTitle,
-      thumb: savedBookmarkMatch ? savedBookmarkMatch.thumb : "",
+      thumb: mangaThumb,
       chapterSlug,
       chapterName: cachedCh ? cachedCh.name : chapterSlug.replace(/-/g, " ").toUpperCase()
     });
@@ -356,6 +381,66 @@ export default function App() {
             </p>
           </div>
         </footer>
+      )}
+      {/* Welcome & No-Ads Popup Modal */}
+      {showWelcome && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in" id="welcome-modal">
+          <div className="bg-[#0b0b0b] border border-white/10 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl shadow-red-600/10 transform transition-all scale-100 p-6 sm:p-8 flex flex-col items-center text-center">
+            
+            {/* Top decorative gradient line */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 via-orange-500 to-red-600" />
+            
+            {/* Logo Circle */}
+            <div className="w-14 h-14 rounded-full bg-red-600/10 border border-red-500/20 flex items-center justify-center mb-5 animate-pulse">
+              <span className="text-xl font-black italic text-red-500">R</span>
+            </div>
+            
+            <h3 className="text-xl sm:text-2xl font-black italic text-white uppercase tracking-tight mb-2">
+              Selamat Datang!
+            </h3>
+            
+            <p className="text-slate-400 text-xs sm:text-sm leading-relaxed mb-6">
+              Terima kasih telah mengunjungi <span className="text-red-500 font-bold">ReadKomik</span>, platform baca manga, manhwa, dan manhua tercepat dengan antarmuka premium dan modern.
+            </p>
+            
+            {/* Cards for creator and ad info */}
+            <div className="w-full space-y-3 mb-6">
+              {/* Creator Card */}
+              <div className="flex items-start gap-3 p-3.5 rounded-xl bg-white/5 border border-white/5 text-left">
+                <div className="bg-red-500/10 p-2 rounded-lg text-red-400 mt-0.5 shrink-0">
+                  <Heart className="w-4 h-4 fill-red-400" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">Pembuat Platform</h4>
+                  <p className="text-xs text-slate-300">
+                    Dikembangkan oleh <span className="text-red-400 font-semibold">Muhammad Fajar Pradita</span> dengan dedikasi penuh untuk menghadirkan kenyamanan membaca terbaik bagi seluruh komik lovers Indonesia.
+                  </p>
+                </div>
+              </div>
+
+              {/* No Ads Card */}
+              <div className="flex items-start gap-3 p-3.5 rounded-xl bg-white/5 border border-white/5 text-left">
+                <div className="bg-green-500/10 p-2 rounded-lg text-green-400 mt-0.5 shrink-0">
+                  <ShieldCheck className="w-4 h-4 text-green-400" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">100% BEBAS IKLAN & GRATIS</h4>
+                  <p className="text-xs text-slate-300">
+                    Kami berkomitmen penuh untuk <span className="text-green-400 font-semibold">TIDAK menampilkan iklan pop-up atau banner yang mengganggu</span>. Nikmati pengalaman membaca komik tanpa hambatan secara gratis selamanya!
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dismiss Button */}
+              <button
+                onClick={handleDismissWelcome}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-red-600/25 transition-all text-sm active:scale-[0.98] cursor-pointer"
+              >
+                Mulai Membaca Sekarang
+              </button>
+            </div>
+          </div>
       )}
     </div>
   );

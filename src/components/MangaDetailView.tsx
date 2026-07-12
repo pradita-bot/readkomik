@@ -113,7 +113,7 @@ export default function MangaDetailView({
           {/* Cover Poster */}
           <div className="w-44 sm:w-56 aspect-[3/4] object-cover rounded-xl bg-black border border-white/10 flex-shrink-0 self-center md:self-start shadow-xl overflow-hidden">
             <img
-              src={detail.thumb}
+              src={detail.thumb || null}
               alt={detail.title}
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover"
